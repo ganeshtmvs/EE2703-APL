@@ -1,0 +1,418 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage[top=1.0in, bottom=1.0in, left=0.8in, right=0.8in]{geometry}
+
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+\usepackage[]{graphicx}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{cprotect}
+\usepackage{amsmath, amsfonts}
+\usepackage{siunitx}
+\usepackage{mathrsfs}
+\usepackage{framed}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{float}
+\usepackage[english]{babel}
+\usepackage{blindtext}
+\newenvironment{conditions}[1][where:]
+  {#1 \begin{tabular}[t]{>{$}l<{$} @{${}={}$} l}}
+  {\end{tabular}\\[\belowdisplayskip]}
+
+\newlist{notes}{enumerate}{1}
+\setlist[notes]{label=\textbf{Note:} ,leftmargin=*}
+
+\newlist{hints}{enumerate}{1}
+\setlist[hints]{label=\textbf{Hint:} ,leftmargin=*}
+
+\usepackage{xcolor}
+\usepackage{color}
+\definecolor{com1}{RGB}{125,125,125}
+\definecolor{comment}{RGB}{140,115,115}
+\definecolor{numbering}{rgb}{0.2,0.2,0.2}
+\definecolor{key}{RGB}{0,0,180}
+\definecolor{in}{RGB}{0,100,0}
+\definecolor{out}{RGB}{100,30,30}
+\definecolor{bg}{RGB}{245,245,245}
+\definecolor{bgLight}{RGB}{250,250,250}
+\definecolor{string}{RGB}{0,150,0}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\urlstyle{same}
+
+\usepackage{listings}
+
+\lstdefinestyle{py_code}{ %
+    backgroundcolor=\color{bg},      % choose the background
+    basicstyle=\ttfamily\small,		      % fonts
+    breakatwhitespace=false,         % automatic breaks at whitespace ?
+    breaklines=true,                 % sets automatic line breaking
+    captionpos=b,                    % caption-position - bottom
+    commentstyle=\itshape\color{comment},    % comment style
+    extendedchars=true,              % use non-ASCII
+    frame=single,	                   % single frame around the code
+    keepspaces=true,                 % keeps spaces in text
+    keywordstyle=\bfseries\color{key},% keyword style
+    language=Python,                 	  % the language of the code
+    morekeywords={Null},       % add more keywords to the set
+    numbers=left,                    % line_numbers (none, left, right)
+    numbersep=10pt,                  % line_no - code dist
+    numberstyle=\footnotesize\color{numbering}, % line_no style
+    rulecolor=\color{black},         % frame_color [!always set]
+    showspaces=false,                % show spaces everywhere
+    showstringspaces=false,          % 
+    showtabs=false,                  % 
+    stepnumber=1,                    % step b/w two line-no
+    stringstyle=\color{string},     % string literal style
+    tabsize=2,	                       % sets default tabsize to 2 spaces
+    title=\lstname,                  % show the filename
+    escapeinside={(*}{*)},			  % escape from style inside (* *)
+    xleftmargin=\parindent,
+    belowskip=-1.3 \baselineskip,
+    aboveskip=1.0 \baselineskip,
+    columns=fullflexible,
+    xleftmargin=0.15in,
+}
+\lstnewenvironment{py_code}
+{\lstset{style=py_code}}
+{}
+
+\lstdefinestyle{psudo}{ %
+    backgroundcolor=\color{bgLight},   % choose the background
+    basicstyle=\ttfamily\small,		      % fonts
+    breakatwhitespace=false,         % automatic breaks at whitespace ?
+    breaklines=true,                 % sets automatic line breaking
+    captionpos=b,                    % caption-position - bottom
+    commentstyle=\itshape\color{com1},          % comment style
+    extendedchars=true,              % use non-ASCII
+    keepspaces=true,                 % keeps spaces in text
+    language=C,                 	  % the language of the code
+    morekeywords={type,NULL, True, False},       % add more keywords to the set
+    showspaces=false,                % show spaces everywhere
+    showstringspaces=false,          % 
+    showtabs=false,                  % 
+    tabsize=2,	                       % sets default tabsize to 2 spaces
+    title=\lstname,                  % show the filename
+    escapeinside={(*}{*)},			  % escape from style inside (* *)
+    belowskip=-1.8 \baselineskip,
+    aboveskip=0.9 \baselineskip,
+    columns=fullflexible,
+    xleftmargin=0.2in,
+    frame=tb,
+    framexleftmargin=16pt,
+    framextopmargin=6pt,
+    framexbottommargin=6pt, 
+    framerule=0pt,
+}
+
+\lstnewenvironment{psudo}
+{\lstset{style=psudo}}
+{}
+
+\graphicspath{ ./ }
+
+
+\title{\textbf{EE2703 : Applied Programming Lab \\ Assignment 4\\Fouier Approximations}} 
+\author{T.M.V.S GANESH \\ EE19B124} % Author name
+
+\date{\today} % Date for the report
+
+\begin{document}		
+		
+\maketitle % Insert the title, author and date
+\section*{Introduction}
+ The assignment is about 
+ \begin{itemize}
+  	\item Fitting the functions exp(x) and cos(cos(x)) over the interval $[0,2\pi]$
+  	\item Finding the first 51 coefficients using integration and least squares method
+  	\item plotting graphs and comparing coefficients
+  \end{itemize}
+\section*{Q1}  
+  
+Defining the Required Functions to calculate the coefficients of exp(x) and cos(cos(x))
+
+Python code:
+\begin{py_code}
+   # Required Functions 
+def f(x):
+    return np.exp(x)
+def g(x):
+    return np.cos(np.cos(x))
+def u(x,k,f):
+    return f(x)*np.cos(k*x)
+def v(x,k,f):
+    return f(x)*np.sin(k*x)
+\end{py_code}
+  \textbf{Graph:} \\
+This code plots the original function from the interval[-2$\pi$,4$\pi$] and the function obtained from fourier analysis.Fourier analysis gives the function in the region [0,2$\pi$] and varies periodically with period 2$\pi$\\
+
+Python Code:
+\begin{py_code}
+#Original and expected functions from fourier series
+x = np.arange(-2*np.pi,4*np.pi,0.01)
+a = np.arange(-2*np.pi,4*np.pi,0.01)
+for i in range(len(a)):
+    if a[i] > 2*np.pi or a[i] < 0:
+        a[i] = a[i] - (2*pi)*(a[i]//(2*np.pi))
+figure(1,figsize=(10,10))    #plot of exp(x) in semilogy axis     
+semilogy(x,f(x),label = 'Actual Graph')
+
+figure(2,figsize=(10,10)) #plot of cos(cos(x))
+plot(x,g(x),label = 'Actual Graph')
+
+figure(1)
+semilogy(x,f(a),label = 'Graph obtained by fourier Analysis')#expected plot from fourier series
+title("Fig 1:Actaul vs expected on semilog scale of exp(x)")
+xlabel("x",fontsize = 15)
+ylabel("y(logscale)",fontsize = 15)
+legend()
+grid()
+
+figure(2)
+plot(x,g(a),label = 'Graph obtained by fourier Analysis') #expected plot from fourier series
+legend(loc = 'upper right')
+title("Fig 2:Actaul vs expected of cos(cos(x))")
+xlabel("x",fontsize = 15)
+ylabel("y",fontsize = 15)
+grid() 
+\end{py_code}
+ 
+"a" in the above program returns the value corresponding to that in region [0,2$\pi$] with period 2$\pi$ by adding or subtracting multiples of 2$\pi$\\
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.41]{fig1,2.jpeg}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+	\caption{Actual and expected graphs of functions}
+	\label{fig:Q4 }
+\end{figure} 
+
+\section*{Q2}  
+The fourier series of any function can be represented as follows:
+\begin{equation}
+    a_{0} + \sum\limits_{n=1}^{\infty} {{a_{n}\cos(nx_{i})+b_{n}\sin(nx_{i})}} \approx f(x_{i})             
+    \end{equation} 
+The equations which are used to find the Fourier coefficients are as follows:
+\begin{equation}
+         a_{0} = \frac{1}{2\pi}\int\limits_{0}^{2\pi} f(x)dx                
+\end{equation} 
+\begin{equation}
+         a_{n} = \frac{1}{\pi}\int\limits_{0}^{2\pi} f(x)\cos(nx)dx         
+\end{equation}
+\begin{equation}
+         b_{n} = \frac{1}{\pi}\int\limits_{0}^{2\pi} f(x)\sin(nx)dx     
+\end{equation}
+Computing the first 51 coefficients of the functions using the quad function and storing the $a_n$ and $b_n$ of the functions separately\\ 
+
+Python code:
+\begin{py_code}
+    #Q2 Computing the Coefficients
+
+bf_0 = 0
+af_0 = integral.quad(f,0,2*np.pi)[0] / (2*np.pi)
+coefficients_f = [af_0,bf_0] #first 51 coefficients of exp(x) 
+for i in range(1,26):
+    a_n = integral.quad(u,0,2*pi,args = (i,f))[0] / np.pi
+    b_n = integral.quad(v,0,2*pi,args = (i,f))[0] / np.pi
+    temp = [a_n,b_n]
+    coefficients_f = coefficients_f + temp
+bg_0 = 0
+ag_0 = integral.quad(g,0,2*np.pi)[0] / (2*np.pi)
+coefficients_g = [ag_0,bg_0]#first 51 coefficients of cos(cos(x))
+for i in range(1,26):
+    a_n = integral.quad(u,0,2*pi,args = (i,g))[0] / np.pi
+    b_n = integral.quad(v,0,2*pi,args = (i,g))[0] / np.pi
+    temp = [a_n,b_n]
+    coefficients_g = coefficients_g + temp   
+af_n = []
+bf_n = []
+for i in range(52):
+    if i%2 == 0:
+        af_n = af_n +[coefficients_f[i]]
+    else:
+        bf_n = bf_n + [coefficients_f[i]]
+ag_n = []
+bg_n = []
+for i in range(52):
+    if i%2 == 0:
+        ag_n = ag_n +[coefficients_g[i]]
+    else:
+        bg_n = bg_n + [coefficients_g[i]]        
+coefficients_f.remove(coefficients_f[1])   
+coefficients_g.remove(coefficients_g[1])   
+
+\end{py_code}
+
+ \section*{Q3}
+ Plotting the magnitude of Coefficients in loglog and smilog y axis the coefficients include first 26 $a_n$ and first 25 $b_n$  terms \\
+ 
+ Python code:
+\begin{py_code}
+#Q3 Plotting magnitude of coefficients vs n
+
+figure(3,figsize=(10,10))       #plot of coefficients  of exp(x) in semilog axis             
+semilogy(range(26),af_n,'ro',label='a_n of exp(x)',markersize=4)
+semilogy(range(1,26),np.abs(bf_n[1:]),'bo',label='b_n of exp(x)',markersize=6)
+figure(4,figsize=(10,10))   #plot of coefficients  of exp(x) in loglog axis
+loglog(range(26),af_n,'ro',label='a_n of exp(x)',markersize=4)
+loglog(range(1,26),np.abs(bf_n[1:]),'bo',label='b_n of exp(x)',markersize=6)
+figure(5,figsize=(10,10))  #plot of coefficients  of cos(cos(x)) in semilog axis              
+semilogy(range(26),np.abs(ag_n),'ro',label='a_n of cos(cos(x))',markersize=4)
+semilogy(range(1,26),np.abs(bg_n[1:]),'bo',label='b_n of  cos(cos(x))',markersize=4)
+figure(6,figsize=(10,10))  #plot of coefficients  of cos(cos(x)) in loglog axis
+loglog(range(26),np.abs(ag_n),'ro',label='a_n of cos(cos(x))',markersize=4)
+loglog(range(1,26),np.abs(bg_n[1:]),'bo',label='b_n of cos(cos(x))',markersize=4)
+\end{py_code}
+
+Answers:\\
+\emph{(a)}The $b_n$ coefficients of cos(cos(x)) are nearly zero in this case since g(x) is a even function but the quad function considers them as very low value which is why there is a deviation from zero\\
+\emph{(b)}The Coefficients of cos(cos(x)) die out quickly as the contribution from the larger frequencies is quite low.This can be observed from the expansion of cos(x) by replacing x with cos(x) as the power increases the coefficients in expansion varies as (1/n!) and $cos^{2n}$(x) can be represented  in terms of sum of cos(kx),k < 2n where as coefficients of exp(x) are given below and are multiplied by a large constant\\ 
+\emph{(c)}The Coefficients of exp(x) computed from the integral are 
+\begin{equation}
+         a_{n} = \frac{e^{2\pi} - 1}{\pi(n^2 + 1)}        
+\end{equation}
+\begin{equation}
+         b_{n} = \frac{(e^{2\pi} - 1)n}{\pi(n^2 + 1)}        
+\end{equation}
+for $n>>1$ the variations of $a_n$ and $b_n$ can be treated as 1/$n^2$ and 1/$n$\\
+so in loglog axis the plot is against log(coefficients) vs log(n) which gives a  approximate linear plot with negative slope\\
+\section*{Q4}
+Computing the Coefficients using the Least Squares approach by fitting the function at 400 points in [0,2$\pi$]\\
+\begin{equation}
+    a_{0} + \sum\limits_{n=1}^{25} {{a_{n}\cos(nx_{i})+b_{n}\sin(nx_{i})}} \approx f(x_{i})             
+    \end{equation} 
+ Python code:
+\begin{py_code}
+#Q4 Computing the coefficients using the least squares approach
+
+x2=linspace(0,2*pi,401)
+x2=x2[:-1] # drop last term to have a proper periodic integral
+b_f=f(x2)# f has been written to take a vector
+b_g = g(x2)
+A=zeros((400,51)) # allocate space for A
+A[:,0]=1 # col 1 is all ones
+for k in range(1,26):
+    A[:,2*k-1]=cos(k*x2) # cos(kx) column
+    A[:,2*k]=sin(k*x2) # sin(kx) column
+#endfor
+c1=lstsq(A,b_f,rcond = None)[0]# the ’[0]’ is to pull out the best fit vector. lstsq returns a list.
+c2 = lstsq(A,b_g,rcond = None)[0]
+pred_af = [c1[0]] #predicted coefficients
+pred_bf = []
+for i in range(1,51):
+    if i%2 == 0:
+        pred_bf = pred_bf + [c1[i]]
+    else:
+        pred_af = pred_af + [c1[i]]
+pred_ag = [c2[0]]  #predicted coefficients
+pred_bg = []
+for i in range(1,51):
+    if i%2 == 0:
+        pred_bg = pred_bg + [c2[i]]
+    else:
+        pred_ag = pred_ag + [c2[i]]   
+\end{py_code}
+c1 and c2 represent the predicted coefficient matrix of exp(x) and cos(cos(x)) respectively\\
+pred\_af,pred\_bf represent lists of $a_n$ of f(x) and g(x) similarly for $b_n$ 
+
+\section*{Q5}
+Plotting the Coefficients from Least Squares along with that of Calculated coefficients\\
+Python code:
+{\tiny
+\begin{py_code}
+
+#Q5 PLotting the coefficients of f(x),g(x) in semilog,loglog axis        
+
+figure(3)
+semilogy(range(26),np.abs(pred_af),'go',label='predicted_an of exp(x)',markersize=4)
+semilogy(range(1,26),np.abs(pred_bf),'yo',label='predicted_bn of exp(x)',markersize=4)
+legend()
+title("Fig 3:Calculated vs predicted coeff of exp(x)")
+xlabel("n",fontsize = 15)
+ylabel("Coefficients(semilog)",fontsize = 15)
+grid()
+
+
+\end{py_code}
+}
+In the Same Way remaining plots are plotted \\
+Graphs:
+ \begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.33]{exp_c.jpeg}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+	\caption{Graph of coefficients of exp(x) in loglog,semilog axis}
+	\label{fig:Q4 }
+\end{figure} 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{cos_c.jpeg}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+	\caption{Graph of coefficients of cos(cos(x)) in loglog,semilog axis}
+	\label{fig:Q4 }
+\end{figure} 
+\section*{Q6}
+Comparing the coefficients obtained from Least Squares approach and fourier analysis\\
+Clearly from the Graph, both the results donot match as in the least squares approach we have considered only 400 points and the values are such that error at that points are minimal where as fourier takes the integarl \\
+Caluculating deviation:\\
+\begin{py_code}
+#Q6 
+
+deviation_f = max(np.abs(coefficients_f - c1)) 
+deviation_g = max(np.abs(coefficients_g - c2))
+print("The Coefficients obtained from both the methods are Different from the Graph")
+print("The maximum deviation betwwen the coefficients of exp(x) is {}".format(deviation_f))
+print("The maximum deviation betwwen the coefficients of cos(cos(x)) is {}".format(deviation_g))
+\end{py_code}
+\section*{Q7}
+Computing the Estimated function from Fourier and Estimated coefficients and plotting: \\
+Python Code:
+\begin{py_code}
+#Q7
+
+figure(7,figsize=(10,10))
+semilogy(x2,f(x2),'bo',label='exp(x)',markersize=2)
+semilogy(x2,(np.array(A) @ np.array(coefficients_f)),'ro',markersize=4,label = 'Fourier')
+semilogy(x2,(np.array(A) @ np.array(c1)),'go',markersize=4,label = 'lstsq')
+legend()
+title("Calculated vs predicted functions of exp(x)")
+xlabel("x",fontsize = 15)
+ylabel("y(semilog)",fontsize = 15)
+grid()
+
+figure(8,figsize=(10,10))
+semilogy(x2,g(x2),'yo',label='cos(cos(x))',markersize=6)
+semilogy(x2,(np.array(A) @ np.array(coefficients_g)),'ro',markersize=5,label = 'Fourier')
+semilogy(x2,(np.array(A) @ np.array(c2)),'go',markersize=3.5,label = 'lstsq')
+legend()
+title("Calculated vs predicted fittings of cos(cos(x))")
+xlabel("x",fontsize = 15)
+ylabel("y(semilog)",fontsize = 15)
+grid()
+\end{py_code}
+The @ command gives the matrix multiplication of the two matrices\\
+ \begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{exp.jpeg}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+	\caption{Estimated and actual plots of exp(x)}
+	\label{fig:contour}
+\end{figure} 
+ \begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{cos.jpeg}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+	\caption{Estimated and actual plots of cos(cos(x))}
+	\label{fig:contour}
+\end{figure} 
+Reason:
+There is a lot of deviation in the figure of exp(x) where as it is nearly agreed  in the case of cos(cos(x)) as the functions expected from fourier analysis of exp(x) is discontinuous at the ends 0,2$\pi$ where as cos(cos(x)) is continuous and from the graphs the coefficients of cos(cos(x)) decay very quick and the effect of higher coefficients is nearly negligable where as that of exp(x) coefficients donot tend to.As we have considered only first 51 coefficients the error in calculating exp(x) is high and in cos(cos(x)) is very low\\
+
+\end{document}
+
+
+
+ 
